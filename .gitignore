@@ -2,6 +2,7 @@
 # Original file is below the dashed (---) line, my modifications are at the top
 
 data/
+.byebug_history
 
 # --------------------------------------------------------------------------------------------------
 
