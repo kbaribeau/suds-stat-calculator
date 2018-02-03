@@ -69,6 +69,6 @@ games_played.each do |game_csv_row|
   team_stat_entries[reported_game.away_team].total_reported_games += 1 if reported_game.home_team_reported?
 end
 
-team_stat_entries.values.each do |stat|
+team_stat_entries.values.sort_by(&:league_points).reverse.each do |stat|
   p stat
 end
