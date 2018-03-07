@@ -26,6 +26,7 @@ games_played.each do |game_csv_row|
   pools_for_round = event_yaml[round]
   a_pool_teams = pools_for_round['A']
   b_pool_teams = pools_for_round['B']
+  c_pool_teams = pools_for_round['C']
 
   reported_game = ReportedGame.new(game_csv_row)
 
@@ -44,6 +45,14 @@ games_played.each do |game_csv_row|
     else
       team_stat_entries[reported_game.winning_team].b_pool_wins += 1
       team_stat_entries[reported_game.losing_team].b_pool_losses += 1
+    end
+  elsif c_pool_teams.include?(reported_game.home_team) && c_pool_teams.include?(reported_game.away_team)
+    if reported_game.tie?
+      team_stat_entries[reported_game.winning_team].c_pool_ties += 1
+      team_stat_entries[reported_game.losing_team].c_pool_ties += 1
+    else
+      team_stat_entries[reported_game.winning_team].c_pool_wins += 1
+      team_stat_entries[reported_game.losing_team].c_pool_losses += 1
     end
   else
     # Do nothing, crossover games are worth nothing
