@@ -60,21 +60,6 @@ games_played.each do |game_csv_row|
     end
   else
     # Do nothing, crossover games are worth nothing
-
-    # OR... do something with crossover games
-    # [reported_game.home_team, reported_game.away_team].each do |team|
-    #   if reported_game.winning_team == team
-    #     # winning team gets A pool points
-    #     team_stat_entries[reported_game.winning_team].crossover_points += 6
-    #   elsif reported_game.losing_team == team
-    #     # losing team gets B pool losing points
-    #     team_stat_entries[reported_game.losing_team].crossover_points += 1
-    #   else
-    #     # on a crossover tie, both teams get points as if it were an A pool game
-    #     team_stat_entries[reported_game.winning_team].crossover_points += 3
-    #     team_stat_entries[reported_game.losing_team].crossover_points += 3
-    #   end
-    # end
   end
 
   team_stat_entries[reported_game.home_team].total_spirit += reported_game.home_team_spirit
