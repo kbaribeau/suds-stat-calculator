@@ -1,19 +1,22 @@
 require 'csv'
 require 'yaml'
-require './lib/team_stats'
-require './lib/reported_game'
-require 'byebug'
+require_relative 'stat_downloader'
+require_relative 'stats_calculator/team_stats'
+require_relative 'stats_calculator/reported_game'
 
 event_file_path = ARGV[0]
-input_file_path = ARGV[1]
-
-games_played = CSV.read(input_file_path,
-                        { headers: :first_row,
-                          force_quotes: true,
-                          quote_char: '"',
-                          encoding: 'bom|UTF-8'})
+league_id = ARGV[1]
 
 event_yaml = YAML.load_file(event_file_path)
+
+raw_csv = StatDownloader.new.download(league_id)
+# strip off the UTF BOM bytes from beginning of string
+league_csv_string = raw_csv[3...raw_csv.length]
+
+games_played = CSV.parse(league_csv_string,
+                         { headers: :first_row,
+                           force_quotes: true,
+                           quote_char: '"'})
 
 team_stat_entries = {}
 all_teams = event_yaml['Round 1']['A'] + event_yaml['Round 1']['B']
@@ -23,6 +26,7 @@ end
 
 games_played.each do |game_csv_row|
   round = game_csv_row['stage']
+  next if round == 'Playoffs' || round == 'Exhibition Games'
   pools_for_round = event_yaml[round]
   a_pool_teams = pools_for_round['A']
   b_pool_teams = pools_for_round['B']
@@ -72,7 +76,6 @@ games_played.each do |game_csv_row|
     #   end
     # end
   end
-
 
   team_stat_entries[reported_game.home_team].total_spirit += reported_game.home_team_spirit
   team_stat_entries[reported_game.away_team].total_spirit += reported_game.away_team_spirit

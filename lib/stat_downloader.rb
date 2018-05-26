@@ -4,7 +4,7 @@ class StatDownloader
   def download(league_id)
     mech = Mechanize.new
     login(mech)
-    download_game_results_csv(mech)
+    download_game_results_csv(mech, league_id)
   end
 
   private
@@ -25,7 +25,7 @@ class StatDownloader
     end
   end
 
-  def download_game_results_csv(mech)
+  def download_game_results_csv(mech, league_id)
     schedule_admin_url = "https://saskatoonultimate.org/e/admin/#{league_id}/schedule"
     schedule_admin_page = mech.get(schedule_admin_url)
     file = schedule_admin_page.links_with(text: 'Export').first.click
