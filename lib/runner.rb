@@ -1,14 +1,15 @@
 require 'csv'
 require 'yaml'
 require_relative 'stat_downloader'
+require_relative 'pool_scraper'
 require_relative 'stats_calculator/team_stats'
 require_relative 'stats_calculator/reported_game'
 
 class Runner
-  def run(event_file_path, league_id)
-    event_yaml = YAML.load_file(event_file_path)
-
+  def run(league_id)
+    pool_info = PoolScraper.new.scrape_pools(league_id)
     raw_csv = StatDownloader.new.download(league_id)
+
     # strip off the UTF BOM bytes from beginning of string
     league_csv_string = raw_csv[3...raw_csv.length]
 
@@ -18,7 +19,7 @@ class Runner
                                quote_char: '"'})
 
     team_stat_entries = {}
-    all_teams = event_yaml['Round 1']['A'] + event_yaml['Round 1']['B']
+    all_teams = pool_info['Round 1']['A'] + pool_info['Round 1']['B']
     all_teams.each do |team_name|
       team_stat_entries[team_name] = TeamStats.new(team_name)
     end
@@ -26,7 +27,7 @@ class Runner
     games_played.each do |game_csv_row|
       round = game_csv_row['stage']
       next if round == 'Playoffs' || round == 'Exhibition Games'
-      pools_for_round = event_yaml[round]
+      pools_for_round = pool_info[round]
       a_pool_teams = pools_for_round['A']
       b_pool_teams = pools_for_round['B']
       c_pool_teams = pools_for_round['C']
@@ -49,7 +50,7 @@ class Runner
           team_stat_entries[reported_game.winning_team].b_pool_wins += 1
           team_stat_entries[reported_game.losing_team].b_pool_losses += 1
         end
-      elsif c_pool_teams.include?(reported_game.home_team) && c_pool_teams.include?(reported_game.away_team)
+      elsif !c_pool_teams.nil? && c_pool_teams.include?(reported_game.home_team) && c_pool_teams.include?(reported_game.away_team)
         if reported_game.tie?
           team_stat_entries[reported_game.winning_team].c_pool_ties += 1
           team_stat_entries[reported_game.losing_team].c_pool_ties += 1
@@ -74,4 +75,4 @@ class Runner
   end
 end
 
-Runner.new.run(ARGV[0], ARGV[1])
+Runner.new.run(ARGV[0])
