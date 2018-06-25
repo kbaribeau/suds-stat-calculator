@@ -26,7 +26,7 @@ class Runner
 
     games_played.each do |game_csv_row|
       round = game_csv_row['stage']
-      next if round == 'Playoffs' || round == 'Exhibition Games'
+      next if round.match?(/Playoffs/) || round.match(/Exhibition/)
       pools_for_round = pool_info[round]
       a_pool_teams = pools_for_round['A']
       b_pool_teams = pools_for_round['B']
