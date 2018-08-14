@@ -19,7 +19,7 @@ class Runner
                                quote_char: '"'})
 
     team_stat_entries = {}
-    all_teams = pool_info['Round 1']['A'] + pool_info['Round 1']['B']
+    all_teams = pool_info.values.map { |round| round.values }.flatten.uniq
     all_teams.each do |team_name|
       team_stat_entries[team_name] = TeamStats.new(team_name)
     end
@@ -32,6 +32,8 @@ class Runner
       b_pool_teams = pools_for_round['B']
       c_pool_teams = pools_for_round['C']
       d_pool_teams = pools_for_round['D']
+      
+      a_pool_teams = all_teams if a_pool_teams.nil?
 
       reported_game = ReportedGame.new(game_csv_row)
 
