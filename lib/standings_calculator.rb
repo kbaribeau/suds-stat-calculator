@@ -17,8 +17,6 @@ class StandingsCalculator
       team_stat_entries[team_name] = TeamStats.new(team_name)
     end
 
-    # FIXME: currently crashes on 2018/19 leagues, which don't have A/B pools at the start of the
-    # season, but do at the end
     games_played.each do |game_csv_row|
       round = game_csv_row['stage']
       next if round.match?(/Playoff/) || round.match(/Exhibition/)

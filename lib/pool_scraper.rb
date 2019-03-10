@@ -34,7 +34,10 @@ class PoolScraper
         pool_name = pool_element.children.css('.spacer-half').children.find { |c| c.name == 'input' }.attributes['value'].text # Yuck
         next if pool_name.match?(/(New Pool)/)
         pool_name = pool_name.split(' Pool').first # Strip off everything after the word "Pool". Ex: A Pool (Round 2) -> A
-        teams = pool_element.css('ul.pool-teams li').map { |elem| elem.text.strip }
+
+        # the > span here prevents us from catching the "Edit Team" link for event specific teams
+        # those links also have a span, but it's not a direct descendent of li
+        teams = pool_element.css('ul.pool-teams li > span').map { |elem| elem.text.strip }
 
         pools[round_name][pool_name] = teams
       end

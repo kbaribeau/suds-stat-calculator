@@ -4,7 +4,7 @@ class ReportedGame
   end
 
   def winning_team
-    if @parsed_csv_row['home_score'].to_i > @parsed_csv_row['away_score'].to_i
+    if @parsed_csv_row['home_score'] == 'win' || @parsed_csv_row['home_score'].to_i > @parsed_csv_row['away_score'].to_i
       @parsed_csv_row['home_team']
     else
       @parsed_csv_row['away_team']
@@ -12,7 +12,7 @@ class ReportedGame
   end
 
   def losing_team
-    if @parsed_csv_row['home_score'].to_i > @parsed_csv_row['away_score'].to_i
+    if @parsed_csv_row['away_score'] == 'loss' || @parsed_csv_row['home_score'].to_i > @parsed_csv_row['away_score'].to_i
       @parsed_csv_row['away_team']
     else
       @parsed_csv_row['home_team']
